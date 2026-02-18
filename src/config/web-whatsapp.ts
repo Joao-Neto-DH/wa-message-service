@@ -7,6 +7,7 @@ export class WebWhatsapp {
   private logger = Logger.getInstance();
   private readonly clientId: string;
   static instances: Record<string, WebWhatsapp> = {};
+  private isAuthenticated = false;
 
   constructor(clientId: string) {
     this.client = new Client({
@@ -31,37 +32,48 @@ export class WebWhatsapp {
         this.logger.log("error", error);
       });
 
+    this.attachEvents();
+
+    WebWhatsapp.instances[clientId] = this;
+
+    this.logger.log(
+      "info",
+      "%s clients initialized",
+      Object.keys(WebWhatsapp.instances).length.toString(),
+    );
+  }
+
+  private attachEvents() {
     this.client.on("ready", () => {
-      this.logger.log("info", "Client %s ready", clientId);
+      this.logger.log("info", "Client %s ready", this.clientId);
       this.isReady = true;
     });
 
-    this.client.on("disconnected", () => {
-      this.logger.log("info", "Client %s disconnected", clientId);
+    this.client.on("disconnected", (reason) => {
+      this.logger.log(
+        "info",
+        "Client %s disconnected. Reason: %s",
+        this.clientId,
+        reason,
+      );
       this.isReady = false;
+      this.isAuthenticated = false;
     });
 
-    this.client.on("authenticated", (d) => {
-      this.logger.log("info", "Client %s authenticated", clientId);
-      console.log(d);
+    this.client.on("authenticated", () => {
+      this.logger.log("info", "Client %s authenticated", this.clientId);
+      this.isAuthenticated = true;
     });
 
     this.client.on("auth_failure", (e) => {
       this.logger.log(
         "error",
         "Client %s failed to authenticate: %s",
-        clientId,
+        this.clientId,
         e,
       );
       this.logger.log("error", e);
     });
-
-    WebWhatsapp.instances[clientId] = this;
-    this.logger.log(
-      "info",
-      "%s clients initialized",
-      Object.keys(WebWhatsapp.instances).length.toString(),
-    );
   }
 
   getClient() {
@@ -76,6 +88,7 @@ export class WebWhatsapp {
     this.logger.log("info", "Client %s stopping", this.clientId);
     await this.client.logout();
     await this.client.destroy();
+    this.client.removeAllListeners();
     delete WebWhatsapp.instances[this.clientId];
     this.logger.log("info", "Client %s stopped", this.clientId);
     this.logger.log(
@@ -83,6 +96,10 @@ export class WebWhatsapp {
       "%s clients initialized",
       Object.keys(WebWhatsapp.instances).length.toString(),
     );
+  }
+
+  getIsAuthenticated() {
+    return this.isAuthenticated;
   }
 
   async sendMessage(to: string, message: string) {

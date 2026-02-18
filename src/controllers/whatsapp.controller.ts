@@ -33,13 +33,18 @@ export class WhatsappController {
       return res.status(200).json({ message: "Client authenticated" });
     });
 
-    webWhatsapp.getClient().on("disconnected", (reason) => {
+    webWhatsapp.getClient().on("disconnected", async (reason) => {
       logger.log(
         "info",
         "Client %s disconnected: %s",
         String(clientId),
         reason,
       );
+
+      const webWhatsapp = WebWhatsapp.instances[String(clientId)];
+      if (webWhatsapp) {
+        await webWhatsapp.stop();
+      }
     });
   }
 
@@ -51,5 +56,39 @@ export class WhatsappController {
     }
     await webWhatsapp.stop();
     res.status(200).json({ message: "Client stopped" });
+  }
+
+  static async checkAuthenticationStatus(req: Request, res: Response) {
+    const { clientId } = req.params;
+    const webWhatsapp = WebWhatsapp.instances[String(clientId)];
+    if (!webWhatsapp) {
+      return res.status(404).json({ message: "Client not found" });
+    }
+    const isAuthenticated = webWhatsapp.getIsAuthenticated();
+    res.status(200).json({ isAuthenticated });
+  }
+
+  static async profile(req: Request, res: Response) {
+    const { clientId } = req.params;
+    const webWhatsapp = WebWhatsapp.instances[String(clientId)];
+    if (!webWhatsapp) {
+      return res.status(404).json({ message: "Client not found" });
+    }
+    const profile = webWhatsapp.getClient().info;
+    res.status(200).json({
+      whatsappName: profile.pushname,
+      phoneNumber: profile.wid.user,
+    });
+  }
+
+  static async sendMessage(req: Request, res: Response) {
+    const { clientId } = req.params;
+    const { to, message } = req.body;
+    const webWhatsapp = WebWhatsapp.instances[String(clientId)];
+    if (!webWhatsapp) {
+      return res.status(404).json({ message: "Client not found" });
+    }
+    await webWhatsapp.sendMessage(to, message);
+    res.status(200).json({ message: "Message sent" });
   }
 }
