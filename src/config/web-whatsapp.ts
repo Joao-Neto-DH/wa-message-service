@@ -41,7 +41,27 @@ export class WebWhatsapp {
       this.isReady = false;
     });
 
+    this.client.on("authenticated", (d) => {
+      this.logger.log("info", "Client %s authenticated", clientId);
+      console.log(d);
+    });
+
+    this.client.on("auth_failure", (e) => {
+      this.logger.log(
+        "error",
+        "Client %s failed to authenticate: %s",
+        clientId,
+        e,
+      );
+      this.logger.log("error", e);
+    });
+
     WebWhatsapp.instances[clientId] = this;
+    this.logger.log(
+      "info",
+      "%s clients initialized",
+      Object.keys(WebWhatsapp.instances).length.toString(),
+    );
   }
 
   getClient() {
@@ -58,6 +78,11 @@ export class WebWhatsapp {
     await this.client.destroy();
     delete WebWhatsapp.instances[this.clientId];
     this.logger.log("info", "Client %s stopped", this.clientId);
+    this.logger.log(
+      "info",
+      "%s clients initialized",
+      Object.keys(WebWhatsapp.instances).length.toString(),
+    );
   }
 
   async sendMessage(to: string, message: string) {
