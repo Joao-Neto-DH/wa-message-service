@@ -41,9 +41,11 @@ export class WhatsappSessionController {
     if (!webWhatsapp) {
       return res.status(404).json({ message: "Client not found" });
     }
-    console.log(to, message);
+    console.log(to, message, webWhatsapp.getIsReady());
 
-    await webWhatsapp.sendMessage(to, message);
+    await webWhatsapp
+      .getClient()
+      .sendMessage("244942779755@c.us", "message", {});
     res.status(200).json({ message: "Message sent" });
   }
 

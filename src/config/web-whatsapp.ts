@@ -16,11 +16,15 @@ export class WebWhatsapp {
       authStrategy: new LocalAuth({
         clientId: clientId,
       }),
+      puppeteer: { headless: false },
     });
     this.clientId = clientId;
+    this.client.on("ready", () => {
+      this.logger.log("info", "Client %s ready", this.clientId);
+    });
 
-    this.attachEvents();
     this.start();
+    this.attachEvents();
 
     WebWhatsapp.instances[clientId] = this;
 
@@ -99,7 +103,6 @@ export class WebWhatsapp {
   async destroy() {
     this.logger.log("info", "Client %s destroying", this.clientId);
 
-    await this.client.logout();
     await this.client.destroy();
 
     this.client.removeAllListeners();
@@ -147,25 +150,24 @@ export class WebWhatsapp {
       this.clientId,
       to,
     );
-    await this.client
-      .sendMessage(to, message)
-      .then(() => {
-        this.logger.log(
-          "info",
-          "Client %s sent message successfully to %s",
-          this.clientId,
-          to,
-        );
-      })
-      .catch((error) => {
-        this.logger.log(
-          "error",
-          "Client %s failed to send message to %s: %s",
-          this.clientId,
-          to,
-          error.message,
-        );
-        this.logger.log("error", error);
-      });
+    await this.client.sendMessage(to, message, {});
+    // .then(() => {
+    this.logger.log(
+      "info",
+      "Client %s sent message successfully to %s",
+      this.clientId,
+      to,
+    );
+    // })
+    // .catch((error) => {
+    //   this.logger.log(
+    //     "error",
+    //     "Client %s failed to send message to %s: %s",
+    //     this.clientId,
+    //     to,
+    //     error.message,
+    //   );
+    //   this.logger.log("error", error);
+    // });
   }
 }
