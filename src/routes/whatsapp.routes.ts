@@ -1,14 +1,22 @@
 import { Router } from "express";
-import { WhatsappController } from "../controllers";
+import { WhatsappController, WhatsappSessionController } from "../controllers";
 
 export const whatsappRoutes = Router();
 
-whatsappRoutes.get("/:clientId", WhatsappController.initiateConnection);
-whatsappRoutes.get("/:clientId/logout", WhatsappController.stopConnection);
-whatsappRoutes.get("/:clientId/me", WhatsappController.profile);
+// manage whatsapp connection
+whatsappRoutes.post("/:clientId", WhatsappController.initiateConnection);
+whatsappRoutes.delete("/:clientId/destroy", WhatsappController.destroy);
+
+// manage whatsapp session
+whatsappRoutes.get("/:clientId/qrcode/:type", WhatsappSessionController.qrCode);
+whatsappRoutes.post("/:clientId/logout", WhatsappSessionController.logout);
+whatsappRoutes.get("/:clientId/me", WhatsappSessionController.profile);
 whatsappRoutes.get(
   "/:clientId/status",
-  WhatsappController.checkAuthenticationStatus,
+  WhatsappSessionController.checkAuthenticationStatus,
 );
 
-whatsappRoutes.post("/:clientId/send-message", WhatsappController.sendMessage);
+whatsappRoutes.post(
+  "/:clientId/send-message",
+  WhatsappSessionController.sendMessage,
+);
