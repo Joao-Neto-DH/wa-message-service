@@ -16,14 +16,9 @@ export class WebWhatsapp {
       authStrategy: new LocalAuth({
         clientId: clientId,
       }),
-      puppeteer: { headless: false },
     });
     this.clientId = clientId;
-    this.client.on("ready", () => {
-      this.logger.log("info", "Client %s ready", this.clientId);
-    });
 
-    this.start();
     this.attachEvents();
 
     WebWhatsapp.instances[clientId] = this;
@@ -90,6 +85,8 @@ export class WebWhatsapp {
       this.logger.log("info", "Client %s qr code received", this.clientId);
       this.qrCode = qr;
     });
+
+    this.start();
   }
 
   getClient() {
@@ -103,6 +100,7 @@ export class WebWhatsapp {
   async destroy() {
     this.logger.log("info", "Client %s destroying", this.clientId);
 
+    await this.client.logout();
     await this.client.destroy();
 
     this.client.removeAllListeners();

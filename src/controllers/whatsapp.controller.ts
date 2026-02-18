@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { WebWhatsapp } from "../config/web-whatsapp";
 import { Logger } from "../config/logger";
-import qrcode from "qrcode";
 
 const logger = Logger.getInstance();
 
