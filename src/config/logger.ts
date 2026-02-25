@@ -1,4 +1,9 @@
 import pino from "pino";
+// import dotenv from "dotenv";
+import { getEnviroment } from "./enviroment";
+
+// dotenv.config();
+const enviroment = getEnviroment();
 
 type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
 
@@ -8,7 +13,7 @@ export class Logger {
 
   constructor(fileLog: string) {
     this.logger = pino({
-      level: "info",
+      level: enviroment.LOG_LEVEL as LogLevel,
       transport: {
         targets: [
           { target: "pino/file", options: { destination: fileLog } },

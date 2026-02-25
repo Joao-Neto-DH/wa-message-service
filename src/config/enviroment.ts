@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 function validateVariable(
   name: string,
   value: string | undefined,
@@ -5,7 +8,7 @@ function validateVariable(
   required = false,
   defaultValue: string | number | boolean,
 ) {
-  if (required && !value) {
+  if (required && typeof value === "undefined") {
     throw new Error(`Variable ${name} is required`);
   }
 
@@ -26,7 +29,6 @@ function validateVariable(
       throw new Error(`Variable type not supported: ${type}`);
   }
 }
-
 const enviromentConfig: Record<
   string,
   {
@@ -53,6 +55,30 @@ const enviromentConfig: Record<
     type: "string",
     required: false,
     defaultValue: "error",
+  },
+  REDIS_HOST: {
+    value: process.env.REDIS_HOST,
+    type: "string",
+    required: true,
+    defaultValue: "",
+  },
+  REDIS_PORT: {
+    value: process.env.REDIS_PORT,
+    type: "number",
+    required: true,
+    defaultValue: 6379,
+  },
+  REDIS_USERNAME: {
+    value: process.env.REDIS_USERNAME,
+    type: "string",
+    required: true,
+    defaultValue: "",
+  },
+  REDIS_PASSWORD: {
+    value: process.env.REDIS_PASSWORD,
+    type: "string",
+    required: true,
+    defaultValue: "",
   },
 };
 

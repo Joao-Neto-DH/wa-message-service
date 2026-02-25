@@ -1,0 +1,45 @@
+import { Logger } from "../config/logger";
+import { QueueConfig } from "../config/queue-config";
+import { WebWhatsapp } from "../config/web-whatsapp";
+import { getEnviroment } from "../config/enviroment";
+
+const logger = Logger.getInstance();
+const enviroment = getEnviroment();
+
+const messageQueue = new QueueConfig<{
+  to: string;
+  message: string;
+  clientId: string;
+}>(
+  "whatsapp-message-queue",
+  async (job) => {
+    const DELAY_TIME = 30 * 1000; // 30 seconds
+    const { to, message, clientId } = job.data;
+
+    const webWhatsapp = WebWhatsapp.instances[String(clientId)];
+
+    if (!webWhatsapp) {
+      await job.changeDelay(DELAY_TIME);
+      logger.log("error", "Client not found");
+      throw new Error("Client not found");
+    }
+
+    const isReady = webWhatsapp.getIsReady();
+    logger.log(
+      "info",
+      "Is ready: %s. Sending message to %s",
+      String(isReady),
+      to,
+    );
+
+    if (!isReady) {
+      await job.changeDelay(DELAY_TIME);
+      logger.log("error", "Client not ready");
+      throw new Error("Client not ready");
+    }
+    await webWhatsapp.sendMessage(to, message);
+  },
+  enviroment,
+);
+
+export { messageQueue };

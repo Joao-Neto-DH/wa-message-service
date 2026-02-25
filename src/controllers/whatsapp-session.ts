@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { WebWhatsapp } from "../config/web-whatsapp";
 import { Logger } from "../config/logger";
 import qrcode from "qrcode";
+import { messageQueue } from "../queues";
 
 const logger = Logger.getInstance();
 
@@ -37,24 +38,18 @@ export class WhatsappSessionController {
   static async sendMessage(req: Request, res: Response) {
     const { clientId } = req.params;
     const { to, message } = req.body;
+
     const webWhatsapp = WebWhatsapp.instances[String(clientId)];
     if (!webWhatsapp) {
       return res.status(404).json({ message: "Client not found" });
     }
 
-    const isReady = webWhatsapp.getIsReady();
-    Logger.getInstance().log(
-      "debug",
-      "Is ready: %s. Sending message to %s",
-      String(isReady),
-      to,
-    );
-
-    if (isReady) {
-      await webWhatsapp.sendMessage(to, message);
-      return res.status(200).json({ message: "Message sent" });
-    }
-    return res.status(400).json({ message: "Client not ready" });
+    await messageQueue.addJob({
+      to: `${to}@c.us`,
+      message,
+      clientId: String(clientId),
+    });
+    return res.status(200).json({ message: "Message sent" });
   }
 
   static async qrCode(req: Request, res: Response) {
@@ -69,6 +64,10 @@ export class WhatsappSessionController {
     if (!qr) {
       return res.status(204).json();
     }
+
+    qrcode.toString(qr, { type: "terminal", small: true }, (err, qr) => {
+      console.log(qr);
+    });
 
     if (type === "code") {
       return res.status(200).json({ qr: webWhatsapp.getQrCode() });

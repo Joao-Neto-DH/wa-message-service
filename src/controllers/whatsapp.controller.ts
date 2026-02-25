@@ -17,36 +17,6 @@ export class WhatsappController {
     new WebWhatsapp(String(clientId));
 
     return res.status(200).json({ message: "Client initialized" });
-
-    // webWhatsapp.getClient().on("qr", (qr) => {
-    //   logger.log("info", "Client %s qr code: %s", String(clientId), qr);
-    //   res.contentType("image/png");
-
-    //   qrcode.toFileStream(res, qr, (err) => {
-    //     if (err) {
-    //       logger.log("error", "Error generating qr code: %s", err.message);
-    //       return res.status(500).json({ error: "Error generating qr code" });
-    //     }
-    //   });
-    // });
-
-    // webWhatsapp.getClient().on("authenticated", (qr) => {
-    //   return res.status(200).json({ message: "Client authenticated" });
-    // });
-
-    // webWhatsapp.getClient().on("disconnected", async (reason) => {
-    //   logger.log(
-    //     "info",
-    //     "Client %s disconnected: %s",
-    //     String(clientId),
-    //     reason,
-    //   );
-
-    //   const webWhatsapp = WebWhatsapp.instances[String(clientId)];
-    //   if (webWhatsapp) {
-    //     await webWhatsapp.stop();
-    //   }
-    // });
   }
 
   static async destroy(req: Request, res: Response) {

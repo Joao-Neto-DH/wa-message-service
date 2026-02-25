@@ -1,5 +1,4 @@
 import express from "express";
-import * as dotenv from "dotenv";
 import { routes } from "./routes";
 import helmet from "helmet";
 import cors from "cors";
@@ -14,7 +13,6 @@ const pinoMiddleware = pinoHttp({
   level: "error",
 });
 
-dotenv.config();
 app.use(helmet({}));
 app.use(cors());
 app.use(express.json());
