@@ -41,12 +41,20 @@ export class WhatsappSessionController {
     if (!webWhatsapp) {
       return res.status(404).json({ message: "Client not found" });
     }
-    console.log(to, message, webWhatsapp.getIsReady());
 
-    await webWhatsapp
-      .getClient()
-      .sendMessage("244942779755@c.us", "message", {});
-    res.status(200).json({ message: "Message sent" });
+    const isReady = webWhatsapp.getIsReady();
+    Logger.getInstance().log(
+      "debug",
+      "Is ready: %s. Sending message to %s",
+      String(isReady),
+      to,
+    );
+
+    if (isReady) {
+      await webWhatsapp.sendMessage(to, message);
+      return res.status(200).json({ message: "Message sent" });
+    }
+    return res.status(400).json({ message: "Client not ready" });
   }
 
   static async qrCode(req: Request, res: Response) {
@@ -79,7 +87,7 @@ export class WhatsappSessionController {
     }
   }
   static async logout(req: Request, res: Response) {
-    const { clientId, type } = req.params;
+    const { clientId } = req.params;
     const webWhatsapp = WebWhatsapp.instances[String(clientId)];
 
     if (!webWhatsapp) {
