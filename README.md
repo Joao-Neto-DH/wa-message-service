@@ -67,7 +67,8 @@ Se tudo der certo, o sistema retornará status 200 com a resposta `true` se sim 
 
 ```json
 {
-  "isAuthenticated": true
+  "isAuthenticated": true,
+  "isReady": true
 }
 ```
 

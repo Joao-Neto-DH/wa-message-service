@@ -14,7 +14,8 @@ export class WhatsappSessionController {
       return res.status(404).json({ message: "Client not found" });
     }
     const isAuthenticated = webWhatsapp.getIsAuthenticated();
-    res.status(200).json({ isAuthenticated });
+    const isReady = webWhatsapp.getIsReady();
+    res.status(200).json({ isAuthenticated, isReady });
   }
 
   static async profile(req: Request, res: Response) {

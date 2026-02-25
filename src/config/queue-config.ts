@@ -63,7 +63,8 @@ export class QueueConfig<T extends object> {
       this.logger.log("info", "Job %s progress: %s", job.id || "unknown");
     });
 
-    this.worker.on("completed", (job) => {
+    this.worker.on("completed", async (job) => {
+      await job.remove();
       this.logger.log("info", "Job %s completed", job.id || "unknown");
     });
   }
