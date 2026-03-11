@@ -17,6 +17,9 @@ export class WebWhatsapp {
         clientId: clientId,
         dataPath: ".wa-message-service",
       }),
+      puppeteer: {
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      },
     });
     this.clientId = clientId;
 
