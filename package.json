@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "rm -rf .wa-message-service/*/Singleton* &&node dist/index.js",
+    "start": "rm -rf .wa-message-service/*/Singleton* && node dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
