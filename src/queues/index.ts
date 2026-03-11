@@ -13,14 +13,12 @@ const messageQueue = new QueueConfig<{
 }>(
   "whatsapp-message-queue",
   async (job) => {
-    const DELAY_TIME = 30 * 1000; // 30 seconds
     const { to, message, clientId } = job.data;
 
     const webWhatsapp = WebWhatsapp.instances[String(clientId)];
 
     if (!webWhatsapp) {
       new WebWhatsapp(String(clientId));
-      await job.changeDelay(DELAY_TIME);
       logger.log("error", "Client not found");
       throw new Error("Client not found");
     }
@@ -28,13 +26,14 @@ const messageQueue = new QueueConfig<{
     const isReady = webWhatsapp.getIsReady();
     logger.log(
       "info",
-      "Is ready: %s. Sending message to %s",
+      "Is ready: %s. Sending message to %s attempts: %s, delay: %s",
       String(isReady),
       to,
+      job.attemptsMade.toString(),
+      job.delay.toString(),
     );
 
     if (!isReady) {
-      await job.changeDelay(DELAY_TIME);
       logger.log("error", "Client not ready");
       throw new Error("Client not ready");
     }

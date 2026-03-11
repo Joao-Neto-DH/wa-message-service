@@ -80,6 +80,24 @@ const enviromentConfig: Record<
     required: true,
     defaultValue: "",
   },
+  CORS_ORIGIN: {
+    value: process.env.CORS_ORIGIN,
+    type: "string",
+    required: true,
+    defaultValue: "",
+  },
+  MESSAGE_RETRY_ATTEMPTS: {
+    value: process.env.MESSAGE_RETRY_ATTEMPTS,
+    type: "number",
+    required: true,
+    defaultValue: 5,
+  },
+  MESSAGE_RETRY_DELAY: {
+    value: process.env.MESSAGE_RETRY_DELAY,
+    type: "number",
+    required: true,
+    defaultValue: 5000,
+  },
 };
 
 export function getEnviroment() {

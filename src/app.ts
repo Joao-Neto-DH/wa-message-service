@@ -5,7 +5,9 @@ import cors from "cors";
 import pinoHttp from "pino-http";
 import { Logger } from "./config/logger";
 import { globalErrorHandlerMiddleware } from "./middlewares";
+import { getEnviroment } from "./config/enviroment";
 
+const enviroment = getEnviroment();
 const app = express();
 
 const pinoMiddleware = pinoHttp({
@@ -17,6 +19,7 @@ app.use(helmet({}));
 app.use(
   cors({
     methods: ["GET", "POST", "DELETE"],
+    origin: String(enviroment.CORS_ORIGIN),
   }),
 );
 app.use(express.json());

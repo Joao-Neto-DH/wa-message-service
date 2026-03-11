@@ -7,12 +7,20 @@ export class QueueConfig<T extends object> {
   private readonly QUEUE_NAME: string;
   private readonly logger = Logger.getInstance();
   private readonly worker: Worker<T>;
+  private readonly maxAttempts: number;
+  private readonly retryDelay: number;
 
   constructor(
     name: string,
     processWorker: (job: Job<T, any, string>) => Promise<void>,
     enviroment: ReturnType<typeof getEnviroment>,
   ) {
+    this.maxAttempts = parseInt(
+      enviroment.MESSAGE_RETRY_ATTEMPTS?.toString()!,
+      10,
+    );
+    this.retryDelay = parseInt(enviroment.MESSAGE_RETRY_DELAY?.toString()!, 10);
+
     const connectionOptions: ConnectionOptions = {
       host: String(enviroment.REDIS_HOST),
       port: Number(enviroment.REDIS_PORT),
@@ -21,13 +29,23 @@ export class QueueConfig<T extends object> {
     };
 
     this.QUEUE_NAME = name;
-    this.queue = new Queue(name, { connection: connectionOptions });
+    this.queue = new Queue(name, {
+      connection: connectionOptions,
+    });
     this.worker = new Worker(name, processWorker, {
       connection: connectionOptions,
       removeOnComplete: { age: 60, count: 10 },
       maxStartedAttempts: 5,
       removeOnFail: { age: 2 * 60, count: 10 },
     });
+
+    this.logger.log(
+      "info",
+      "Queue %s created with max attempts: %s and retry delay: %s",
+      this.QUEUE_NAME,
+      this.maxAttempts.toString(),
+      this.retryDelay.toString(),
+    );
 
     this.setupEvents();
   }
@@ -76,7 +94,8 @@ export class QueueConfig<T extends object> {
 
   public async addJob(data: T) {
     return await this.queue.add("message", data, {
-      attempts: 5,
+      attempts: this.maxAttempts,
+      backoff: { type: "exponential", delay: this.retryDelay },
     });
   }
 }
