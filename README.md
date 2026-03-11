@@ -27,7 +27,7 @@ Se tudo der certo, o sistema retornará status 200 com a resposta `{
 
 ### 2. Autenticação
 
-Para autenticar o cliente, basta fazer uma solicitação GET para a rota `/api/v1/whatsapp/[client-id]/authenticate`
+Para autenticar o cliente, basta fazer uma solicitação GET para a rota `/api/v1/whatsapp/[client-id]/image`
 
 Se tudo der certo, o sistema retornará status 200 com a image do QRCODE para escanear com o seu whatsapp
 
