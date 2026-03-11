@@ -15,6 +15,7 @@ export class WebWhatsapp {
     this.client = new Client({
       authStrategy: new LocalAuth({
         clientId: clientId,
+        dataPath: ".wa-message-service",
       }),
     });
     this.clientId = clientId;
@@ -126,6 +127,7 @@ export class WebWhatsapp {
     this.isReady = false;
     this.isAuthenticated = false;
     this.isInitialized = false;
+    delete WebWhatsapp.instances[this.clientId];
 
     this.logger.log("info", "Client %s logged out", this.clientId);
   }

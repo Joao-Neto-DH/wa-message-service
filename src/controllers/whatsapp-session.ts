@@ -40,10 +40,10 @@ export class WhatsappSessionController {
     const { clientId } = req.params;
     const { to, message } = req.body;
 
-    const webWhatsapp = WebWhatsapp.instances[String(clientId)];
-    if (!webWhatsapp) {
-      return res.status(404).json({ message: "Client not found" });
-    }
+    // const webWhatsapp = WebWhatsapp.instances[String(clientId)];
+    // if (!webWhatsapp) {
+    //   return res.status(404).json({ message: "Client not found" });
+    // }
 
     await messageQueue.addJob({
       to: `${to}@c.us`,

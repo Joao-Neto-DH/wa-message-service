@@ -26,6 +26,7 @@ export class QueueConfig<T extends object> {
       connection: connectionOptions,
       removeOnComplete: { age: 60, count: 10 },
       maxStartedAttempts: 5,
+      removeOnFail: { age: 2 * 60, count: 10 },
     });
 
     this.setupEvents();

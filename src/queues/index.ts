@@ -19,6 +19,7 @@ const messageQueue = new QueueConfig<{
     const webWhatsapp = WebWhatsapp.instances[String(clientId)];
 
     if (!webWhatsapp) {
+      new WebWhatsapp(String(clientId));
       await job.changeDelay(DELAY_TIME);
       logger.log("error", "Client not found");
       throw new Error("Client not found");

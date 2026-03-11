@@ -14,7 +14,11 @@ const pinoMiddleware = pinoHttp({
 });
 
 app.use(helmet({}));
-app.use(cors());
+app.use(
+  cors({
+    methods: ["GET", "POST", "DELETE"],
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(pinoMiddleware);

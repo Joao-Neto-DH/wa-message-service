@@ -10,7 +10,7 @@ export class WhatsappController {
 
     if (WebWhatsapp.instances[String(clientId)]) {
       logger.log("info", "Client %s already exists", String(clientId));
-      res.status(200).json({ error: "Client already exists" });
+      res.status(400).json({ error: "Client already exists" });
       return;
     }
 
