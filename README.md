@@ -15,6 +15,16 @@ O sistema fornece as seguintes funcionalidades:
 
 Para usar o sistema, basta seguir os passos abaixo:
 
+### 0. Instalação
+
+Execute o comando `npm install` para instalar as dependências do sistema
+
+Execute o comando `npm run build` para iniciar o sistema
+
+Copie o arquivo `.env.example` para `.env` e preencha as variáveis de ambiente com as suas configurações
+
+Execute o comando `npm run start` para iniciar o sistema
+
 ### 1. Inicializar o cliente
 
 Para inicializar o cliente, basta fazer uma solicitação POST para a rota `/api/v1/whatsapp/[client-id]`
@@ -45,6 +55,17 @@ Para enviar uma mensagem, basta fazer uma solicitação POST para a rota `/api/v
 Se tudo der certo, o sistema retornará status 200 com a resposta `{
     "message": "Message sent"
 }`
+
+Obs: O telefone deve ser formatado com o prefixo do país, exemplo: `2449xxxxxxxx` e a mensagem só será enviada caso `/api/v1/whatsapp/[client-id]/status` retorne
+
+```json
+{
+  "isAuthenticated": true,
+  "isReady": true
+}
+```
+
+Caso não retorne a resposta acima, verifique o status de autenticação e o qrcode.
 
 ### 4. Ver perfil do whatsapp
 
