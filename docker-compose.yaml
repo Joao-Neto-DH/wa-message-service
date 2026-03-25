@@ -38,6 +38,4 @@ networks:
 
 volumes:
   messages:
-    driver: local
   wwebjs_cache:
-    driver: local

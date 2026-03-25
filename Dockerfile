@@ -16,10 +16,11 @@ RUN npm run build
 
 FROM node:20-alpine
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
-ENV PUPPETEER_CACHE_DIR=/app/chrome
+RUN apk add --no-cache chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_CACHE_DIR=/cache/chrome/
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN apt-get update && apt-get install -y chromium
 
 WORKDIR /app
 
