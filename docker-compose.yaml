@@ -1,0 +1,43 @@
+services:
+  whatsapp:
+    container_name: wa-message-service
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - redis_wa
+    networks:
+      wa-service:
+        aliases:
+          - wa-message-service
+    volumes:
+      - messages:/app/.wa-message-service
+      - wwebjs_cache:/app/.wwebjs_cache
+
+  redis_wa:
+    container_name: redis_wa-message-service
+    image: redis/redis-stack:latest
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 30s
+      retries: 10
+    environment:
+      - REDIS_PASSWORD=redis
+      - REDIS_USERNAME=default
+    networks:
+      wa-service:
+        aliases:
+          - wa-message-service
+
+networks:
+  wa-service:
+    driver: bridge
+
+volumes:
+  messages:
+    driver: local
+  wwebjs_cache:
+    driver: local

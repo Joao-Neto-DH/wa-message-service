@@ -1,0 +1,9 @@
+.wa-message-service
+.wwebjs_cache
+dist
+node_modules
+// .env
+app.log
+.env.example
+.gitignore
+.dockerignore
