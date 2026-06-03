@@ -10,7 +10,11 @@ services:
       redis_wa:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:3000/api/v1/whatsapp/health || exit 1",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
