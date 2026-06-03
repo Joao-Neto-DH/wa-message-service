@@ -27,6 +27,7 @@ WORKDIR /app
 COPY --from=builder /app/package*.json ./
 
 RUN npm ci --omit=dev
+RUN apk add --no-cache curl
 
 COPY --from=builder /app/dist ./dist
 

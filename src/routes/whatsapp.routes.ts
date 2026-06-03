@@ -20,3 +20,7 @@ whatsappRoutes.post(
   "/:clientId/send-message",
   WhatsappSessionController.sendMessage,
 );
+
+whatsappRoutes.get("/health", (req, res) => {
+  res.status(200).json({ message: "OK" });
+});

@@ -7,7 +7,14 @@ services:
     env_file:
       - .env
     depends_on:
-      - redis_wa
+      redis_wa:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       wa-service:
         aliases:
